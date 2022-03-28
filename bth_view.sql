@@ -10,13 +10,13 @@ SELECT * FROM vw_Product
 
 --Cau 2
 CREATE VIEW List_Product_View AS
-	SELECT s1.ProductID,p.Name,COUNT(s1.SalesOrderID) AS CountOfOrderID, SUM(s1.OrderQty*s1.UnitPrice) as SubTotal
-	FROM Sales.SalesOrderDetail s1
+	SELECT p.ProductID,p.Name,COUNT(*) AS CountOfOrderID, SUM(s1.OrderQty*s1.UnitPrice) as Total
+	FROM Production.Product p
+	JOIN Sales.SalesOrderDetail s1 ON p.ProductID = s1.ProductID
 	JOIN Sales.SalesOrderHeader s2 ON s1.SalesOrderID = s2.SalesOrderID
-	JOIN Production.Product p ON s1.ProductID = p.ProductID
-	WHERE YEAR(s2.OrderDate)=2014 AND MONTH(s2.OrderDate) BETWEEN 1 AND 3 AND SubTotal > 10000
-	GROUP BY s1.ProductID,p.Name
-	HAVING COUNT(s1.SalesOrderID) > 50
+	WHERE YEAR(s2.OrderDate)=2014 AND DATEPART(q,s2.OrderDate)=1
+	GROUP BY p.ProductID,p.Name
+	HAVING COUNT(s1.SalesOrderID) > 500 AND SUM(s1.OrderQty*s1.UnitPrice) > 10000
 SELECT * FROM List_Product_View
 
 --Cau 3
